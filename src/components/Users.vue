@@ -4,21 +4,20 @@
     <p v-text='text'></p>
     <h3>Using for loop</h3>
     <p v-if="showNames"> list of learners</p>
-    <p v-if="displayName" v-for="user in users">Firstname: {{user.firstName}}</br>
-    Lastname:{{user.lastName}}</p>
+    <p v-if="displayName" v-for="user in users">Fullname: {{user.name}}</br>
+    Email:{{user.email}} <button v-on:click="deleteUser(user)">X</button></p>
     <div>
     <label for="firstname">Firstname</label>
-    <input type='text' v-on:focus="clearMessage" id="firstname" v-model="firstName" />
+    <input type='text' v-on:focus="clearMessage" id="firstname" v-model="name" />
     </div>
     <div>
-    <label for="lastname">Lastname</label>
-    <input type='text' v-on:focus="clearMessage" id="lastname" v-model="lastName" />
+    <label for="email">email</label>
+    <input type='text' v-on:focus="clearMessage" id="email" v-model="email" />
     </div>
     <span v-if='showError'>Please fill the input fields to add new user</span>
     <button v-on:click="addName">Submit</button>
     <button v-on:click="showNames">show names</button>
     <button v-on:click="hideNames">hide names</button>
-    <p>{{userChoice}}</p>
     <h3>Using conditionals</h3>
   </div>
 </template>
@@ -31,49 +30,46 @@ export default {
       msg: 'Getting started with Vue',
       text: 'welcome',
       html: '<p>Getting started with Vue</p>',
-      firstName: '',
-      lastName: '',
+      name: '',
+      email: '',
       showError: false,
-      users: [
-        {
-          firstName: 'Brian',
-          lastName: 'Walter'
-        },
-        {
-          firstName: 'John',
-          lastName: 'Doe'
-        },
-        {
-          firstName: 'Jane',
-          lastName: 'Doe'
-        }
-      ],
+      users: [],
       displayName: true,
       showNames: () => {
-          this.displayName = true
+        this.displayName = true
       },
       hideNames: () => {
-          this.displayName = false
+        this.displayName = false
       },
       addName: (e) => {
-        console.log(e.target.value)
-        if (!this.firstName || !this.lastName) {
+        if (!this.name || !this.email) {
           this.showError = true;
           return;
         }
         const newUser = {
-          firstName: this.firstName,
-          lastName: this.lastName,
+          name: this.name,
+          email: this.email,
         }
         this.users.push(newUser);
-        this.firstName = '';
-        this.lastName = '';
+        this.name = '';
+        this.email = '';
       },
       clearMessage: () => {
         this.showError = false;
       }
     };
   },
+  methods: {
+    deleteUser: function (user) {
+      return this.users.splice(this.users.indexOf(user), 1)
+    }
+  },
+  created: function() {
+    this.$http.get('https://jsonplaceholder.typicode.com/users')
+    .then(response => {
+      this.users = response.data 
+    })
+  }
 };
 </script>
 
